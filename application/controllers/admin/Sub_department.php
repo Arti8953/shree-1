@@ -26,7 +26,13 @@
     		{
     			$data=array(
     				'deptName'=>$_POST['deptName'],
-    				'subDeptName'=>$_POST['subDeptName']
+    				'subDeptName'=>$_POST['subDeptName'],
+						'inPrifix'=>$_POST['inPrifix'],
+						'inStart'=>$_POST['inStart'],
+						'inSufix'=>$_POST['inSufix'],
+						'outPrifix'=>$_POST['outPrifix'],
+						'outStart'=>$_POST['outStart'],
+						'outSufix'=>$_POST['outSufix']
     			);
     			// print_r($data);
     			$this->Sub_department_model->add($data);
@@ -37,9 +43,18 @@
         public function edit($id)
         {
             if ($_POST) {
-                $data=$this->input->post();
-                // print_r($data);
+							$data=array(
+								'deptName'=>$_POST['deptName'],
+								'subDeptName'=>$_POST['subDeptName'],
+								'inPrifix'=>$_POST['inPrifix'],
+								'inStart'=>$_POST['inStart'],
+								'inSufix'=>$_POST['inSufix'],
+								'outPrifix'=>$_POST['outPrifix'],
+								'outStart'=>$_POST['outStart'],
+								'outSufix'=>$_POST['outSufix']
+							);
                 $this->Sub_department_model->edit($id,$data);
+								$this->session->set_flashdata('success','Successfully');
                 redirect(base_url('admin/Sub_department'));
 
             }

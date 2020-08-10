@@ -25,12 +25,19 @@
                                 <td>
                                     <div class="col-md-12">
                                         <label>Job Work Party Name</label>
-                                        <input type="text" name="FromParty" class="form-control" value='<?php echo $trans_data[0]['fromParty']; ?>' readonly>
 
+                                        <select name="FromParty" class="form-control" id="toParty" readonly>
+                                            <?php foreach ($branch_data as $value) : ?>
+                                                <option value="<?php echo $value->id ?>" <?php if ($value->id == $trans_data[0]['fromParty']) {
+                                                                                                echo "selected";
+                                                                                            } ?>> <?php echo $value->name; ?></option>
+                                            <?php endforeach; ?>
+
+                                        </select>
                                     </div>
                                 </td>
                                 <td><label>From Godown</label>
-                                    <input type="text" class="form-control " name="FromGodown" value="<?php echo $trans_data[0]['from_godown']; ?>" readonly>
+                                    <input type="text" class="form-control " name="FromGodown" value="<?php echo $trans_data[0]['sub1']; ?>" readonly>
                                 </td>
                             </tr>
                             <tr>
@@ -40,12 +47,16 @@
                                     <div class="col-md-12">
                                         <label>Job Work Party Name</label>
                                         <select name="toParty" class="form-control" id="toParty" readonly>
-                                            <option>Select </option>
+                                            <?php foreach ($branch_data as $value) : ?>
+                                                <option value="<?php echo $value->id ?>" <?php if ($value->id == $job2) {
+                                                                                                echo "selected";
+                                                                                            } ?>> <?php echo $value->name; ?></option>
+                                            <?php endforeach; ?>
 
                                         </select>
                                     </div>
                                 </td>
-                                <td><label>To Godown</label><input type="text" class="form-control " value="<?php echo $trans_data[0]['to_godown']; ?>" readonly></td>
+                                <td><label>To Godown</label><input type="text" class="form-control " value="<?php echo $trans_data[0]['sub2']; ?>" readonly></td>
 
                             </tr>
                             <tr>
@@ -57,7 +68,7 @@
                                     <table>
                                         <tr>
                                             <td><label>Challan No</label></td>
-                                            <td><input type="text" class="form-control " name="challan" value="<?php echo $trans_data[0]['challan_no']; ?>" readonly></td>
+                                            <td><input type="text" class="form-control " name="challan" value="<?php echo $trans_data[0]['challan_in']; ?>" readonly></td>
                                         </tr>
                                     </table>
                                 </td>
@@ -95,7 +106,27 @@
                                         <th>Remark</th>
                                     </tr>
                                 </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>Total</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
 
+
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -112,7 +143,7 @@
 
             </div>
         </div>
-
+        <div id='summary'></div>
     </div>
 </div>
 
@@ -122,6 +153,7 @@
         getlist();
 
         var table;
+
         $(document).on('change', '#obc', function(e) {
             var obc = $('#obc').val();
 
@@ -131,8 +163,9 @@
                 type: "POST",
                 url: "<?php echo base_url('admin/transaction/recieve_obc') ?>",
                 data: {
-                    'trans_id': '<?php echo $trans_data[0]['transaction_id']; ?>',
+                    'trans_id': <?php echo $trans_data[0]['transaction_id']; ?>,
                     'obc': obc,
+                    'godown': <?php echo $godown; ?>,
                     '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
                 },
 
@@ -141,7 +174,8 @@
                         toastr.error('Failed!', "OBC did not match");
                     } else if (data == 1) {
                         toastr.success('Success!', "Recieved successfully");
-
+                        $('#obc').val("");
+                        $('#obc').focus();
                         table.ajax.reload();
                     } else if (data == 2) {
                         toastr.error('Failed!', "Something went wrong..Status not updated");
@@ -172,7 +206,41 @@
                         return json.data;
                     },
                 },
+                "footerCallback": function(row, data, start, end, display) {
+                    var api = this.api(),
+                        data;
 
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function(i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                            i : 0;
+                    };
+
+                    // Total over all pages
+                    total = api
+                        .column(10)
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Total over this page
+                    pageTotal = api
+                        .column(10, {
+                            page: 'current'
+                        })
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Update footer
+                    $(api.column(10).footer()).html(
+                        +pageTotal + ' ( ' + total + ' total)'
+                    );
+                },
 
                 "createdRow": function(row, data, dataIndex) {
                     if (data[15] == `pending`) {
@@ -186,7 +254,32 @@
                     },
 
                 ],
+                dom: 'Bfrtip',
+                buttons: [
+                    'pageLength', {
+                        extend: 'excel',
+                        footer: true,
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }, {
+                        extend: 'pdf',
+                        footer: true,
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }, {
+                        extend: 'print',
+                        footer: true,
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
 
+                    'selectAll',
+                    'selectNone',
+                    'colvis'
+                ],
                 scrollY: 500,
                 scrollX: false,
                 scrollCollapse: true,

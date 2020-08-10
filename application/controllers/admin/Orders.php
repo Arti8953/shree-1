@@ -24,6 +24,7 @@ class Orders extends CI_Controller
     $this->load->view('admin/index', $data);
   }
 
+
   public function dashboard()
   {
     $data = array();
@@ -31,6 +32,7 @@ class Orders extends CI_Controller
     $data['cause'] = $this->common_model->select('cause_list');
     $data['order_count'] = $this->Orders_model->get_order_count();
     $data['get_complete'] = $this->Orders_model->get_order_complete();
+
     $data['get_cancel'] = $this->Orders_model->get_order_cancel();
     $data['get_pending'] = $this->Orders_model->get_order_pending();
     $data['main_content'] = $this->load->view('admin/order/dashboard', $data, TRUE);
@@ -44,7 +46,19 @@ class Orders extends CI_Controller
     $data['main_content'] = $this->load->view('admin/order/order_flow_chart', $data, TRUE);
     $this->load->view('admin/index', $data);
   }
+  public function customerName()
+  {
+    if ($_POST) {
+      $data['name'] = $this->Orders_model->get_customer($_POST['id']);
+      $output='';
+      foreach($data['name'] as $value){
 
+        $output .=  '<option value='.$value['id'].'>'.$value['name'].'</option>';
+      }
+
+      echo json_encode($output) ;
+    }
+  }
   public function add_new_order()
   {
     if ($_POST) {
@@ -66,7 +80,10 @@ class Orders extends CI_Controller
           $orderno = "STK" . (string) $cc;
         }
       }
+      $branch_order_number=$this->input->post('branch_order_number');
+
       $data = array(
+        'branch_order_number' => $branch_order_number,
         'order_number' => $orderno,
         'customer_name' => $_POST['customer_name'],
         'session' => $_POST['session'],
@@ -96,7 +113,7 @@ class Orders extends CI_Controller
               'quantity' => $_POST['quantity'][$i],
               'priority' => $_POST['priority'][$i],
               'order_barcode' => $pbc,
-             
+
               'design_name' => $_POST['design_name'][$i],
               'design_code' => $_POST['design_code'][$i],
               'remark' => $_POST['remark'][$i],
@@ -127,6 +144,7 @@ class Orders extends CI_Controller
     $data['designname'] = $this->Orders_model->get_design_name();
     $data['designCode'] = $this->Orders_model->get_design_code();
     $data['unit'] = $this->Orders_model->get_unit();
+    $data['branch_name'] = $this->Orders_model->get_branch();
     $data['all_Order'] = $this->Orders_model->select_order_type('order_type');
     $data['data_cat'] = $this->common_model->select('data_category');
     $data['customer'] = $this->common_model->select('customer_detail');
@@ -163,14 +181,26 @@ class Orders extends CI_Controller
   public function getOrderDetails()
   {
     $id = $this->security->xss_clean($_POST['id']);
+
     $data = array();
     $data['febName'] = $this->Orders_model->getOrderDetails($id);
+
     if($data['febName']){
+      if(isset($_POST['godown'])){
+      $godown = $this->security->xss_clean($_POST['godown']);
+          if($data['febName'][0]['godown']==$godown){
+            echo json_encode($data['febName']);
+          }else{
+            echo json_encode(2);
+          }
+      }else{
       echo json_encode($data['febName']);
+      }
+
     }else{
       echo json_encode(0);
     }
-    
+
   }
 
   public function getFabricDetails()
@@ -241,7 +271,7 @@ class Orders extends CI_Controller
     }
   }
 
-  
+
 
   // Dashbord Actions
 
@@ -296,7 +326,7 @@ class Orders extends CI_Controller
     $data['main_content'] = $this->load->view('admin/order/receive_print', $data, TRUE);
     $this->load->view('admin/print/index', $data);
   }
- 
+
   public function edit_order_product_details($order_id)
   {
     $order_id = sanitize_url($order_id);
@@ -317,16 +347,16 @@ class Orders extends CI_Controller
       $data = $this->security->xss_clean($data);
       // echo"<pre>"; print_r($data);exit;
       for ($i = 0; $i < count($data['serial_number']); $i++) {
-       
+
           $data1 = array(
 
-           
+
             'series_number' => $data['serial_number'][$i],
-            
+
             'unit' => $data['unit'][$i],
             'quantity' => $data['quantity'][$i],
             'priority' => $data['priority'][$i],
-           
+
             'design_barcode' => $data['design_barcode'][$i],
             'design_name' => $data['design_name'][$i],
             'design_code' => $data['design_code'][$i],
@@ -339,15 +369,15 @@ class Orders extends CI_Controller
           );
           $this->Orders_model->edit_order_product_details($data1, $data['pro_id'][$i], 'order_product');
         }
-     
-    
-     
+
+
+
         $this->session->set_flashdata(array('error' => 0, 'msg' => 'ORDER PRODUCT UPDATE DONE'));
-     
+
       redirect($_SERVER['HTTP_REFERER']);
     }
   }
-  
+
   public function assignPbc()
   {
     if ($_POST) {
@@ -356,42 +386,73 @@ class Orders extends CI_Controller
         //echo "<pre>"; print_r($_POST);exit;
       try {
        $obc= $this->Orders_model->get_order_by_id2($data['order_product_id']);
-       
+
        if(isset($obc[0]['pbc']) && $obc[0]['pbc']!=""){
           $this->Orders_model->edit_by_node('parent_barcode', $obc[0]['pbc'],  array('isStock'=> 1),'fabric_stock_received');
-
        }
-
-       
         $id = $data['id'];
-        
         $pbc=  $this->Orders_model->getPBC_deatils($id);
-       
+        //print_r($pbc);exit;
         if(isset($pbc[0])){
-
-
           if ($pbc[0]['fabricName'] == $data['fabric']) {
             $data1['quantity'] = $pbc[0]['current_stock'];
             $data1['pbc'] = $data['id'];
-            $this->Orders_model->edit_order_product_details($data1, $data['order_product_id'], 'order_product');
+             $data1['godown'] = $pbc[0]['godownid'];
             $this->Orders_model->edit_by_node('order_product_id', $data['order_product_id'], $data1, 'order_product');
             $this->Orders_model->edit_by_node('fsr_id', $pbc[0]['fsr_id'],  array('isStock' => 0), 'fabric_stock_received');
-            echo '1'; 
+            echo '1';
         }else{
          echo '0';
           }
         }else{
           echo '2';
         }
-      
       }catch (\Exception $e) {
         $error = $e->getMessage();
         echo $error;
       }
     }
-    
-  } 
 
+  }
+
+  public function deassign()
+  {
+    if ($_POST) {
+      $data = $this->input->post();
+      $data = $this->security->xss_clean($data);
+      //echo "<pre>"; print_r($_POST);exit;
+      try {
+
+        $ids =  $this->security->xss_clean($_POST['ids']);
+        //print_r($_POST['ids']);exit;
+        $c=0;$i=0;$j=0;
+        foreach ($ids as $value) {
+          if ($value != "") {
+            $obc = $this->Orders_model->get_order_by_id2($value);
+
+            if (isset($obc[0]['pbc']) && $obc[0]['pbc'] != "") {
+           $i+=   $this->Orders_model->edit_by_node('parent_barcode', $obc[0]['pbc'],  array('isStock' => 1), 'fabric_stock_received');
+              $data1['quantity'] = 0;
+              $data1['pbc'] = "";
+              $data1['godown'] =0;
+            $j+=  $this->Orders_model->edit_by_node('order_product_id', $value , $data1, 'order_product');
+            }
+
+           $c+=1;
+          }
+        }
+        if($i==$c && $j==$c){
+          echo '1';
+        }else{
+          echo "0";
+        }
+
+      } catch (\Exception $e) {
+        $error = $e->getMessage();
+        // echo $error;
+      }
+    }
+  }
 
   public function cancel_status()
   {

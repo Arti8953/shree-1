@@ -74,7 +74,10 @@
                       <td><?php echo $value->phone_no?></td>
                       <td><?php echo $value->email ?></td>
                       <td><?php echo $value->address ?></td>
-                      <td><?php echo $value->under_branch?></td>
+                      <td><?php foreach($branch_name as $rec){ ?>
+                      <?php   if($value->under_branch==$rec->id) echo $rec->name?>
+                       <?php } ?></td>
+
                       <td>
                         <a href="<?php echo '#'.$value->id; ?>" class="text-center tip" data-toggle="modal" data-original-title="Edit">
                           <i class="fas fa-edit blue"></i>
@@ -97,7 +100,7 @@
                             </div>
                             <div class="modal-body">
                               <div class="widget-content nopadding">
-
+                             <?php echo $this->session->flashdata('success'); ?>
                                 <div class="form-group row">
                                   <label class="control-label col-sm-3">Name</label>
                                   <div class="col-sm-9">
@@ -121,8 +124,8 @@
                                   <div class="col-sm-9">
                                     <select name="under_branch" class="form-control">
                                       <?php foreach ($branch_name as $rec): ?>
-                                      <option <?php if ($value->under_branch==$rec->name) {
-                                    ?>selected<?php } ?> value="<?php echo $rec->name ?>"><?php echo $rec->name ?></option>
+                                      <option <?php if ($value->under_branch==$rec->id) {
+                                    ?>selected<?php } ?> value="<?php echo $rec->id ?>"><?php echo $rec->name ?></option>
                                       <?php endforeach;?>
                                     </select>
                                   </div>
@@ -201,7 +204,7 @@
               <div class="col-sm-9">
                 <select name="under_branch" class="form-control">
                   <?php foreach ($branch_name as $rec): ?>
-                  <option value="<?php echo $rec->name; ?>"> <?php echo $rec->name; ?> </option>
+                  <option value="<?php echo $rec->id; ?>"> <?php echo $rec->name; ?> </option>
                   <?php endforeach;?>
                 </select>
               </div>

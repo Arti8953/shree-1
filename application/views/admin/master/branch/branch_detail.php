@@ -58,6 +58,7 @@
                   <th>Sort Name</th>
                   <th>Phone No</th>
                   <th>Email</th>
+                  <th>Grade</th>
                   <th>Remark</th>
                   <th>Address</th>
                   <th>Category</th>
@@ -78,6 +79,7 @@
                   <td><?php echo $value->sort_name ?></td>
                   <td><?php echo $value->phone_no?></td>
                   <td><?php echo $value->email ?></td>
+                  <td><?php echo $value->grade ?></td>
                   <td><?php echo $value->remark?></td>
                   <td><?php echo $value->address ?></td>
                   <td><?php echo $value->category?></td>
@@ -100,6 +102,7 @@
 
                         </div>
                         <div class="modal-body">
+                          <?php echo $this->session->flashdata('success'); ?>
                           <div class="widget-content nopadding">
                             <div class="form-group row">
                               <label class="control-label col-sm-3">Name</label>
@@ -123,6 +126,12 @@
                               <label class="control-label col-sm-3">Email</label>
                               <div class="col-sm-9">
                                 <input type="email" name="email" class="form-control" value="<?php echo $value->email ?>">
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="control-label col-sm-3">Grade</label>
+                              <div class="col-sm-9">
+                                <input type="text" name="grade" class="form-control" value="<?php echo $value->grade ?>">
                               </div>
                             </div>
                             <div class="form-group row">
@@ -205,6 +214,12 @@
           <label class="control-label col-sm-3">Email</label>
           <div class="col-sm-9">
             <input type="email" class="form-control" name="email" value="" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-sm-3">Grade</label>
+          <div class="col-sm-9">
+            <input type="test" class="form-control" name="grade" value="" required>
           </div>
         </div>
         <div class="form-group row">

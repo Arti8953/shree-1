@@ -2,6 +2,25 @@
 <script type="text/javascript">
   $(document).ready(function() {
 
+    $('#branch_name').on('change', function() {
+      var id = $(this).val();
+      //alert(name);
+      $.ajax({
+        type: "POST",
+        url: "<?= base_url() ?>admin/Orders/customerName",
+        cache: false,
+        data: {
+          'id': id,
+          '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
+        },
+        success: function(response) {
+          //alert(response);
+          $('#select_cust').html(response);
+        }
+      });
+    });
+
+
 
     $('#fresh_form').hide();
     $('#order_form').hide();
@@ -82,14 +101,14 @@
       var type = $(this).val();
       var id = $(this).parent().parent().attr("id");
       var fab = '<input type="text" class="form-control fabric_name" name="fabric_name[]" value="" id=fabric' + id + '>';
-      var fab1 = '<select name="fabric_name[]" class="form-control fabric_name select2" id=fabric' + id + '>'
+      var fab1 = '<select name="fabric_name[]" class="form-control fabric_name " id=fabric' + id + '>'
       fab1 += '<option>Select Fabric</option>'
       fab1 += '<?php foreach ($febName as $value) : ?>'
       fab1 += '<option value="<?php echo $value->fabricName; ?>" > <?php echo $value->fabricName; ?></option>'
       fab1 += '<?php endforeach; ?>'
       fab1 += '</select>';
       var des = '<input type="text" name="design_name[]" class="form-control" value="" id=designName' + id + '>';
-      var des1 = '<select name="design_name[]" class="form-control design_name select2" id=designName' + id + ' >'
+      var des1 = '<select name="design_name[]" class="form-control design_name " id=designName' + id + ' >'
       des1 += '<option>Select Design</option>'
 
       des1 += '</select>';
@@ -147,17 +166,17 @@
 
           function myFunction(value, index, array) {
 
-            html += '  <option value=' + array[index]['design_id'] + '>' + array[index]['designName'] + '</option>';
+            html += '  <option value=' + array[index]['designName'] + '>' + array[index]['designName'] + '</option>';
 
           }
+          $('#designName' + button_id + '').html('');
           $('#designName' + button_id + '').append(html);
         }
       });
     });
     $(document).on('change', '.design_name', function(e) {
       var id = $(this).val();
-      var val = $(this, 'selected').text();
-      console.log(id);
+
       var button_id = $(this).parent().parent().attr("id");
       console.log(button_id);
       var csrf_name = $("#get_csrf_hash").attr('name');
@@ -211,7 +230,7 @@
             $('#fabric' + button_id + '').val(fabric);
             $('#image' + button_id + '').val(data[0]['designPic']);
             $("#preview").attr('src', '<?php echo base_url('upload/') ?>' + data[0]['designPic']);
-           
+
             var csrf_name = $("#get_csrf_hash").attr('name');
             var csrf_val = $("#get_csrf_hash").val();
             $.ajax({
@@ -244,7 +263,6 @@
         }
       });
     });
-
     $(document).on('blur', '.order_barcode', function(e) {
       var order = $(this).val();
       console.log(order);
@@ -380,21 +398,22 @@
       counter = counter + 1;
       var element = '<tr id=' + count + '>'
       element += '<td><input type="text" class="form-control" readonly value=' + (count + 1) + '></td>'
-      element += '<td> <select name="type[]" class="form-control  type" id=type' + count + '>'
+      element += '<td style="width: 5%;"> <select name="type[]" class="form-control  type" id=type' + count + '>'
       element += '                    <option value="1" >Barcode </option>'
       element += '                     <option value="2" > Manual </option>'
       element += '               </select></td>'
       element += '<td> <input type="text" class="form-control" name="serial_number[]" value="" id=serial_number' + count + '></td>'
       element += '<td id=tdbarcode' + count + '></td>'
-      element += ' <td id=tdfab' + count + '><input type="text" class="form-control fabric_name" readonly  name="fabric_name[]" value="" id=fabric' + count + '></td>'
+      element += ' <td id=tdfab' + count + ' style="width: 10%;"><input type="text" class="form-control fabric_name" readonly  name="fabric_name[]" value="" id=fabric' + count + '></td>'
       element += '<td><input type="text" class="form-control" name="hsn[]" value="" readonly id=hsn' + count + '></td>'
 
-      element += '<td id=tddesign' + count + '><input type="text" name="design_name[]" class="form-control" value="" readonly id=designName' + count + '></td>'
+      element += '<td id=tddesign' + count + ' style="width: 10%;"><input type="text" name="design_name[]" class="form-control" value="" readonly id=designName' + count + '></td>'
       element += '<td> <input type="text" name="design_code[]" class="form-control" value="" readonly id=designCode' + count + '></td>'
       element += '<td><input type="text" class="form-control" name="stitch[]" value="" readonly id=stitch' + count + '></td>'
       element += '<td>  <input type="text" class="form-control" name="dye[]" value="" readonly id=dye' + count + '></td>'
-      element += '<td><input type="text" class="form-control" name="matching[]" value="" readonly id=matching' + count + '></td>'
+      element += '<td style="width: 15%;"><input type="text" class="form-control" name="matching[]" value="" readonly id=matching' + count + '></td>'
       element += '<td><input type="text" class="form-control" name="quantity[]" value=""></td>'
+      element += '<td><input type="number" class="form-control" name="pcs[]" value="1"  required></td>'
       element += '<td><input type="text" name="unit[]" class="form-control unit" value="" readonly id=unit' + count + '></td>'
       element += '<td><input type="text" name="image[]" class="form-control unit" value="" readonly id=image' + count + '></td>'
       element += '<td>  <input type="text" class="form-control" name="priority[]"  value="30"></td>'

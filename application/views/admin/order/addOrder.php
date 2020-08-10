@@ -53,21 +53,33 @@
             </div>
             <div class="card-body">
               <div class="row">
-                <div class="col-md-3">
-                  <label>ORDER NUMBER</label>
+                <div class="col-md-2">
+                  <label>Branch Order Number</label>
+                  <input type="text" class="form-control " name="branch_order_number" id='Branch_order_number' >
+                </div>
+                <div class="col-md-2">
+                  <label>Order Number</label>
                   <input type="text" class="form-control order_number" name="order_number" id='order_number' readonly>
                 </div>
-                <div class="col-md-3">
-                  <label>CUSTOMER NAME</label>
-                  <select name="customer_name" class="form-control" id="select_cust">
-                    <option value="">Select Customer</option>
-                    <?php foreach ($customer as $value) : ?>
+                <div class="col-md-2">
+                  <label>Branch Name</label>
+                  <select name="branch_name" class="form-control" id="branch_name">
+                    <option value="">Select Branch Name</option>
+                    <?php foreach ($branch_name as $value) : ?>
                       <option value="<?php echo $value['id']; ?>"> <?php echo $value['name']; ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <div class="col-md-2"></div>
-                <div class="col-md-4"><label>IMAGE</label><img src="" alt="" id="preview" style="width:100px"> </div>
+
+                <div class="col-md-3">
+                  <label>Customer Name</label>
+                  <select name="customer_name" class="form-control" id="select_cust">
+                    <option value="">Select Customer</option>
+
+                  </select>
+                </div>
+
+                <div class="col-md-3"><label>IMAGE</label><img src="" alt="" id="preview" style="width:100px"> </div>
               </div>
             </div>
             <hr>
@@ -82,11 +94,12 @@
                   <th>Hsn</th>
 
                   <th>Design_Name</th>
-                  <th>Design Code</th>
+                  <th>Code</th>
                   <th>Stitch</th>
                   <th>Dye</th>
                   <th>Matching</th>
-                  <th>Quantity</th>
+                  <th>Qty</th>
+                  <th>Pcs</th>
                   <th>Unit</th>
                   <th>Image</th>
                   <th>priority</th>
@@ -97,24 +110,25 @@
                 <tbody id="fresh_data">
                   <tr id="0">
                     <td><input type="text" class="form-control" readonly value="1"></td>
-                    <td> <select name="type[]" class="form-control type " id='type0'>
+                    <td style="width: 5%;"> <select name="type[]" class="form-control type " id='type0'>
 
                         <option value="1">Barcode </option>
                         <option value="2"> Manual </option>
                       </select></td>
                     <td><input type="text" class="form-control" name="serial_number[]" value="" id='serial_number0'></td>
                     <td id='tdbarcode0'></td>
-                    <td id='tdfab0'><input type="text" class="form-control fabric_name " name="fabric_name[]" readonly value="" id='fabric0'>
+                    <td id='tdfab0' style="width: 10%;"><input type="text" class="form-control fabric_name " name="fabric_name[]" readonly value="" id='fabric0'>
                     </td>
                     <td><input type="text" class="form-control " name="hsn[]" value="" id='hsn0' readonly></td>
 
-                    <td id='tddesign0'><input type="text" name="design_name[]" class="form-control" value="" readonly id='designName0'></td>
+                    <td id='tddesign0' style="width: 10%;"><input type="text" name="design_name[]" class="form-control" value="" readonly id='designName0'></td>
                     <td> <input type="text" name="design_code[]" class="form-control" value="" readonly id='designCode0'></td>
                     <td><input type="text" class="form-control" name="stitch[]" value="" readonly id='stitch0'></td>
                     <td> <input type="text" class="form-control" name="dye[]" value="" readonly id='dye0'></td>
-                    <td><input type="text" class="form-control" name="matching[]" value="" readonly id='matching0'></td>
+                    <td style="width: 15%;"><input type="text" class="form-control" name="matching[]" value="" readonly id='matching0'></td>
 
                     <td><input type="text" class="form-control" name="quantity[]" value=""></td>
+                    <td><input type="number" class="form-control" name="pcs[]" value="1"  required></td>
                     <td><input type="text" name="unit[]" class="form-control " value="" readonly id="unit0"></td>
                     <td><input type="text" name="image[]" class="form-control image" value="" readonly id="image0"></td>
                     <td> <input type="text" class="form-control" name="priority[]" value="30"></td>

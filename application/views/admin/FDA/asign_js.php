@@ -1,40 +1,43 @@
 <script type="text/javascript">
-
   $(document).ready(function() {
-  $('#table ').DataTable({
-      
-      
-     "pageLength": 50,
-     "lengthMenu": [[50, 100, 150, -1], [50, 100, 150, "All"]],
-     
-    select:true,
-     dom: 'Bfrtip',
-        buttons: [
-            'pageLength', 'excel', 'pdf', {
-                extend: 'print',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            
-        ],
-         scrollY:        500,
-        scrollX:        false,
-        scrollCollapse: false,
-        paging:         true,
-        fixedColumns:   false,
-        fixedheader: true
-  
-    } );
-    $( window ).on("load", function() {
-        get_list();
-      });
-    function get_list(){
+    $('#table ').DataTable({
+
+      destroy: true,
+      "pageLength": 250,
+      "lengthMenu": [
+        [250, 500, 1000, -1],
+        [250, 500, 1000, "All"]
+      ],
+
+      select: true,
+      dom: 'Bfrtip',
+      buttons: [
+        'pageLength', 'excel', 'pdf', {
+          extend: 'print',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+
+      ],
+      scrollY: 500,
+      scrollX: false,
+      scrollCollapse: false,
+      paging: true,
+      fixedColumns: false,
+      fixedheader: true
+
+    });
+    $(window).on("load", function() {
+      get_list();
+    });
+
+    function get_list() {
       $.ajax({
         type: "POST",
         url: "<?php echo base_url('admin/FDA/get_fda_group_list') ?>",
         data: {
-          '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php  echo $this->security->get_csrf_hash(); ?>'
+          '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
         },
         datatype: 'json',
         beforeSend: function() {
@@ -46,7 +49,7 @@
         }
       });
     }
-    
+
     $('#asign').on('click', function(event) {
       event.preventDefault();
       var selected = [];
@@ -67,7 +70,7 @@
             'selected': selected,
             'fabric_type': fabric_type,
             'fabric_name': fabric_name,
-            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php  echo $this->security->get_csrf_hash(); ?>'
+            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
           },
           datatype: 'json',
           beforeSend: function() {
@@ -78,7 +81,7 @@
             if (data.error) {
               toastr.error('Failed!', data.msg);
               $("#show").html('');
-            }else{
+            } else {
               toastr.success('Success!', data.msg);
               $("#show").html('');
               get_list();
@@ -98,7 +101,7 @@
       // $("#table tr").removeClass("selected");
       $(this).toggleClass('selected');
       // $(event).addClass("selected");
-       
+
     });
 
     // });
@@ -106,7 +109,7 @@
       var fabricType = $(this).val();
       var fabricName = $(this).children("option:selected").html();
       window.value = $(this).val();
-      if(fabricType != "") {
+      if (fabricType != "") {
         var csrf_name = $("#get_csrf_hash").attr('name');
         var csrf_val = $("#get_csrf_hash").val();
         $.ajax({
@@ -115,7 +118,7 @@
           data: {
             'fabricType': fabricType,
             'fabricName': fabricName,
-            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php  echo $this->security->get_csrf_hash(); ?>'
+            '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
           },
           datatype: 'json',
           beforeSend: function() {
@@ -127,11 +130,11 @@
           }
 
         });
-      }else{
+      } else {
         $("#show").html('');
       }
     });
- 
+
     $("#fda_value span").click(function(event) {
       // alert('ok');
       var fabric_id = $(this).attr('id');
@@ -144,7 +147,7 @@
         url: "<?php echo base_url('admin/FDA/get_fda_details') ?>",
         data: {
           'fabric_id': fabric_id,
-          '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php  echo $this->security->get_csrf_hash(); ?>'
+          '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
         },
         datatype: 'json',
         success: function(data) {

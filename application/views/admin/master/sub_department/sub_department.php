@@ -22,7 +22,7 @@
                 <option value="deptName">Department</option>
                 <option value="subDeptName">Godown </option>
               </select>
-      </div>
+          </div>
           <div class="col-4">
             <input type="text" name="searchValue" placeholder="Search" id="searchByValue" class="form-control">
           </div>
@@ -48,6 +48,12 @@
               <th>S/No</th>
               <th>Department</th>
               <th>Godown</th>
+              <th>PrifixIn</th>
+              <th>StartIN</th>
+              <th>SufixIN</th>
+              <th>PrifixOut</th>
+              <th>StartOut</th>
+              <th>SufixOut</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -62,6 +68,12 @@
               <td><?php echo $id ?></td>
               <td><?php echo $value->deptName ?></td>
               <td><?php echo $value->subDeptName?></td>
+              <td><?php echo $value->inPrifix?></td>
+              <td><?php echo $value->inStart?></td>
+              <td><?php echo $value->inSufix?></td>
+              <td><?php echo $value->outPrifix?></td>
+              <td><?php echo $value->outStart?></td>
+              <td><?php echo $value->outSufix?></td>
               <td>
                 <a href="<?php echo '#'.$value->id; ?>" class="text-center tip" data-toggle="modal" data-original-title="Edit">
                   <i class="fas fa-edit blue"></i>
@@ -84,6 +96,7 @@
                 </div>
                 <div class="modal-body">
                   <div class="widget-content nopadding">
+                    <?php echo $this->session->flashdata('success'); ?>
 
                     <div class="form-group row">
                       <label class="control-label col-sm-3">Select Department</label>
@@ -100,6 +113,37 @@
                       <label class="control-label col-sm-3">Godown</label>
                       <div class="col-sm-9">
                         <input type="text" class="form-control" name="subDeptName" value="<?php echo $value->subDeptName?>" id="required">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="control-label col-sm-12">Material In:- </label>
+                      <div class="col-sm-4">
+                          <label class="control-label"> Prifix </label>
+                        <input type="text" class="form-control" name="inPrifix" value="<?php echo $value->inPrifix?>" id="" required="required">
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="control-label"> Start No</label>
+                        <input type="text" class="form-control" name="inStart" value="<?php echo $value->inStart?>" id="" required="required">
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="control-label"> Sufix </label>
+                        <input type="text" class="form-control" name="inSufix" value="<?php echo $value->inSufix?>" id="" required="required">
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label class="control-label col-sm-12">Material Out:- </label>
+                      <div class="col-sm-4">
+                        <label class="control-label"> Prifix </label>
+                        <input type="text" class="form-control" name="outPrifix" value="<?php echo $value->outPrifix?>" id="" required="required">
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="control-label"> Start No</label>
+                        <input type="text" class="form-control" name="outStart" value="<?php echo $value->outStart?>" id="" required="required">
+                      </div>
+                      <div class="col-sm-4">
+                        <label class="control-label"> Sufix </label>
+                        <input type="text" class="form-control" name="outSufix" value="<?php echo $value->outSufix?>" id="" required="required">
                       </div>
                     </div>
                   </div>
@@ -130,15 +174,13 @@
     <div class="modal-content">
   <form class="form-horizontal" method="post" action="<?php echo base_url('admin/Sub_department/addSubDept') ?>" name="basic_validate" id="basic_validate" novalidate="novalidate">
   <div class="modal-header">
-      <h5 class="modal-title">Add Godown</h5>
+    <h5 class="modal-title">Add Godown</h5>
     <button data-dismiss="modal" class="close" type="button">×</button>
-
   </div>
   <div class="modal-body">
     <div class="widget-content nopadding">
-
       <div class="form-group row">
-        <label class="control-label col-sm-3">Select Department</label>
+        <label class="control-label col-sm-3">Department:- </label>
         <div class="col-sm-9">
           <select name="deptName" class="form-control" required="">
             <?php foreach ($department as $rec): ?>
@@ -149,11 +191,43 @@
         </div>
       </div>
       <div class="form-group row">
-        <label class="control-label col-sm-3">Godown</label>
+        <label class="control-label col-sm-3">Godown:- </label>
         <div class="col-sm-9">
           <input type="text" class="form-control" name="subDeptName" value="" id="required" required="required">
         </div>
       </div>
+      <div class="form-group row">
+        <label class="control-label col-sm-12">Material In:- </label>
+        <div class="col-sm-4">
+            <label class="control-label"> Prifix </label>
+          <input type="text" class="form-control" name="inPrifix" value="" id="" required="required">
+        </div>
+        <div class="col-sm-4">
+          <label class="control-label"> Start No</label>
+          <input type="text" class="form-control" name="inStart" value="" id="" required="required">
+        </div>
+        <div class="col-sm-4">
+          <label class="control-label"> Sufix </label>
+          <input type="text" class="form-control" name="inSufix" value="" id="" required="required">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="control-label col-sm-12">Material Out:- </label>
+        <div class="col-sm-4">
+          <label class="control-label"> Prifix </label>
+          <input type="text" class="form-control" name="outPrifix" value="" id="" required="required">
+        </div>
+        <div class="col-sm-4">
+          <label class="control-label"> Start No</label>
+          <input type="text" class="form-control" name="outStart" value="" id="" required="required">
+        </div>
+        <div class="col-sm-4">
+          <label class="control-label"> Sufix </label>
+          <input type="text" class="form-control" name="outSufix" value="" id="" required="required">
+        </div>
+      </div>
+
     </div>
   </div>
   <div class="modal-footer">

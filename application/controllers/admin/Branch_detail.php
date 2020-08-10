@@ -10,7 +10,6 @@
         $this->load->model('Branch_model');
     	}
 
-
     	public function index(){
 	        $data = array();
 					$data['name']='Branch Details';
@@ -19,13 +18,27 @@
 					$this->load->view('admin/index', $data);
     	}
 
-    	public function addBranch()
-    	{
+    	public function addBranch(){
     		if ($_POST)
     		{
-    			$data=$this->input->post();
+					$data = array();
+					$data1 = $this->security->xss_clean($_POST);
+    			$data=array(
+						'name' =>$data1['name'],
+						'sort_name' =>$data1['sort_name'],
+						'phone_no' =>$data1['phone_no'],
+						'email' =>$data1['email'],
+						'grade' =>$data1['grade'],
+						'remark' =>$data1['remark'],
+						'address' =>$data1['address'],
+						'category' =>$data1['category'],
+					);
     			// print_r($data);
-    			$this->Branch_model->add($data);
+    			$id=$this->Branch_model->insert($data,'branch_detail');
+					if($id){
+						$this->session->set_flashdata('success', ' Successfully !!');
+					}
+
     			redirect(base_url('admin/Branch_detail'));
 
     		}
@@ -34,8 +47,20 @@
         public function edit($id)
         {
             if ($_POST) {
-              $data=$this->input->post();
+							$data = array();
+							$data1 = $this->security->xss_clean($_POST);
+							$data=array(
+								'name' =>$data1['name'],
+								'sort_name' =>$data1['sort_name'],
+								'phone_no' =>$data1['phone_no'],
+								'email' =>$data1['email'],
+								'grade' =>$data1['grade'],
+								'remark' =>$data1['remark'],
+								'address' =>$data1['address'],
+								'category' =>$data1['category'],
+							);
               $this->Branch_model->edit($id,$data);
+							$this->session->set_flashdata('success', ' Update Successfully !!');
               redirect(base_url('admin/Branch_detail'));
             }
         }
